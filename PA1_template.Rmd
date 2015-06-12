@@ -6,15 +6,19 @@ output:
   html_document:
     keep_md: true
 ---
+###Introduction
+The purpose of this assignment is to explore a data set generated from an anonymous user wearing a personal activity monitor over a two month period. I attempt to make sense of the daily activity pattern of our user and start to make sense of a large and incomplete data set.
+
 ###Loading and Preprocessing the Data
 
-First download the file:
+First download the file. Downloading using the following code requires an internet connection, but it is reliable and doesn't require the user to change working directory or download the file separately before starting this analysis.
+
 ```{r, echo = TRUE}
 temp = tempfile()
 URL = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(URL, temp, mode="wb", method = "curl")
 unzip(temp, "activity.csv")
-activity <- read.table("activity.csv", sep=",",skip=2, header=T)
+activity <- read.table("activity.csv", sep=",",skip=2, header=TRUE)
 rm(URL, temp)
 ```
 
@@ -50,14 +54,15 @@ The median total number of steps taken per day is 10765 steps.
 
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 library(lattice)
-xyplot(activity$steps ~ activity$interval, dat = activity, type = "l", xlab = "Interval", ylab = "Number of Steps")
+xyplot(activity$steps ~ activity$interval, dat = activity, type = "l",
+       xlab = "Interval", ylab = "Number of Steps")
 ```
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 max(activity$steps, na.rm = TRUE)
 which(activity$steps == "806")
 activity[16490,]
@@ -71,7 +76,7 @@ Note that there are a number of days/intervals where there are missing values (c
 
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 length(which(is.na(activity)))
 ```
 
@@ -80,7 +85,7 @@ Devise a strategy for filling in all of the missing values in the dataset. The s
 In order to fill in the missing values in the dataset, I decided to convert the class of the activity data frame into zoo (Z's Ordered Observations) using the "zoo" package. I use the na.locf (last observation carried forward) function in order to fill in the missing values. In order to use this function, you cannot have a column that starts with NA (or you have nothing to carry forward), so I start by filling in the first day obsevations by copying and pasting the data from day 2. Then I use the locf function to fill in the rest of the dataset.
 
 
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 activity2 <- activity
 day2 <- activity[287:573, 1]
 activity2[1:287, 1] <- day2
@@ -123,15 +128,19 @@ Create a new factor variable in the dataset with two levels -- "weekday" and "we
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 z3$date <- as.Date(z3$date)
 weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 weekend <- c("Saturday", "Sunday")
 z3$day <- factor((weekdays(z3$date) %in% weekdays)+1L,
                              levels=1:2, labels=c('weekend', 'weekday'))
 library(lattice)
-xyplot(z3$steps ~ z3$interval | z3$day, groups = z3$day, dat = z3, type = "l", layout = c(1,2), xlab = "Interval", ylab = "Number of Steps")
+xyplot(z3$steps ~ z3$interval | z3$day, groups = z3$day, dat = z3, type = "l", 
+       layout = c(1,2), xlab = "Interval", ylab = "Number of Steps")
 ```
 
 
 Looking at this plot, we can see that on weekdays, our subject is active earlier in the day and seems to have an overall higher number of steps taken.
+
+###Discussion
+We are becoming ever more able to gather and analyze truly massive data sets. This analysis highlights one particular example, a daily acitivty monitor, and provides code with examples that are generally applicable to other large data sets.

@@ -1,16 +1,20 @@
 # Reproducible Research: Peer Assessment 1
 bcoke  
 June 7, 2015  
+###Introduction
+The purpose of this assignment is to explore a data set generated from an anonymous user wearing a personal activity monitor over a two month period. I attempt to make sense of the daily activity pattern of our user and start to make sense of a large and incomplete data set.
+
 ###Loading and Preprocessing the Data
 
-First download the file:
+First download the file. Downloading using the following code requires an internet connection, but it is reliable and doesn't require the user to change working directory or download the file separately before starting this analysis.
+
 
 ```r
 temp = tempfile()
 URL = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(URL, temp, mode="wb", method = "curl")
 unzip(temp, "activity.csv")
-activity <- read.table("activity.csv", sep=",",skip=2, header=T)
+activity <- read.table("activity.csv", sep=",",skip=2, header=TRUE)
 rm(URL, temp)
 ```
 
@@ -65,7 +69,8 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 
 ```r
 library(lattice)
-xyplot(activity$steps ~ activity$interval, dat = activity, type = "l", xlab = "Interval", ylab = "Number of Steps")
+xyplot(activity$steps ~ activity$interval, dat = activity, type = "l",
+       xlab = "Interval", ylab = "Number of Steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
@@ -199,10 +204,14 @@ weekend <- c("Saturday", "Sunday")
 z3$day <- factor((weekdays(z3$date) %in% weekdays)+1L,
                              levels=1:2, labels=c('weekend', 'weekday'))
 library(lattice)
-xyplot(z3$steps ~ z3$interval | z3$day, groups = z3$day, dat = z3, type = "l", layout = c(1,2), xlab = "Interval", ylab = "Number of Steps")
+xyplot(z3$steps ~ z3$interval | z3$day, groups = z3$day, dat = z3, type = "l", 
+       layout = c(1,2), xlab = "Interval", ylab = "Number of Steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
 
 Looking at this plot, we can see that on weekdays, our subject is active earlier in the day and seems to have an overall higher number of steps taken.
+
+###Discussion
+We are becoming ever more able to gather and analyze truly massive data sets. This analysis highlights one particular example, a daily acitivty monitor, and provides code with examples that are generally applicable to other large data sets.
